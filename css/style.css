@@ -1042,6 +1042,22 @@ img {
   color: var(--text-dark);
 }
 
+.footer-credit {
+  font-size: 0.78rem;
+  color: var(--text-dark);
+}
+
+.footer-credit a {
+  color: var(--primary-light);
+  transition: var(--transition);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-credit a:hover {
+  color: var(--accent);
+}
+
 .back-to-top {
   width: 42px;
   height: 42px;
