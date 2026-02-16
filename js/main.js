@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTypingEffect();
   initSmoothSectionTransitions();
   initAvatarEasterEgg();
+  initWeatherWidget();
 });
 
 /* ---------- Faah Sound ---------- */
@@ -554,4 +555,198 @@ function initAvatarEasterEgg() {
       clickCount = 0;
     }, 1500);
   });
+}
+
+/* ---------- Rider Weather Widget ---------- */
+function initWeatherWidget() {
+  const fab = document.getElementById('weatherFab');
+  const panel = document.getElementById('weatherPanel');
+  if (!fab || !panel) return;
+
+  let fetched = false;
+
+  fab.addEventListener('click', () => {
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open');
+    fab.classList.toggle('active');
+
+    if (!isOpen && !fetched) {
+      fetchWeatherData();
+      fetched = true;
+    }
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
+      panel.classList.remove('open');
+      fab.classList.remove('active');
+    }
+  });
+}
+
+function getWeatherEmoji(code) {
+  if (code <= 0) return '☀️';
+  if (code <= 3) return '⛅';
+  if (code <= 48) return '🌫️';
+  if (code <= 55) return '🌦️';
+  if (code <= 65) return '🌧️';
+  if (code <= 67) return '🌨️';
+  if (code <= 77) return '🌨️';
+  if (code <= 82) return '🌧️';
+  if (code <= 86) return '🌨️';
+  if (code <= 95) return '⛈️';
+  return '⛈️';
+}
+
+function getWeatherDesc(code) {
+  if (code <= 0) return 'Clear';
+  if (code <= 3) return 'Partly Cloudy';
+  if (code <= 48) return 'Foggy';
+  if (code <= 55) return 'Drizzle';
+  if (code <= 65) return 'Rain';
+  if (code <= 67) return 'Freezing Rain';
+  if (code <= 77) return 'Snow';
+  if (code <= 82) return 'Rain Showers';
+  if (code <= 86) return 'Snow Showers';
+  if (code <= 95) return 'Thunderstorm';
+  return 'Severe Storm';
+}
+
+async function fetchWeatherData() {
+  const body = document.getElementById('weatherBody');
+
+  // Cyberjaya: 2.9213, 101.6559 | Jln Klang Lama: 3.0985, 101.6680
+  const urls = [
+    'https://api.open-meteo.com/v1/forecast?latitude=2.9213&longitude=101.6559&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=1',
+    'https://api.open-meteo.com/v1/forecast?latitude=3.0985&longitude=101.6680&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=1'
+  ];
+
+  try {
+    const [cyberjaya, klangLama] = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+
+    const now = new Date();
+    const currentHour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', hour12: false }));
+
+    // Current conditions
+    const cyb = cyberjaya.current;
+    const kl = klangLama.current;
+
+    // Get next 5 hours of forecast (use the worse of the two locations)
+    const hourlyRows = [];
+    for (let i = 0; i < 5; i++) {
+      const h = currentHour + i;
+      if (h >= 24) break;
+      const cybProb = cyberjaya.hourly.precipitation_probability[h];
+      const klProb = klangLama.hourly.precipitation_probability[h];
+      const cybPrecip = cyberjaya.hourly.precipitation[h];
+      const klPrecip = klangLama.hourly.precipitation[h];
+      const worstCode = Math.max(cyberjaya.hourly.weather_code[h], klangLama.hourly.weather_code[h]);
+
+      const timeLabel = new Date(cyberjaya.hourly.time[h]).toLocaleTimeString('en-US', {
+        timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', hour12: true
+      });
+
+      hourlyRows.push({
+        time: timeLabel,
+        icon: getWeatherEmoji(worstCode),
+        prob: Math.max(cybProb, klProb),
+        precip: Math.max(cybPrecip, klPrecip).toFixed(1)
+      });
+    }
+
+    // Determine advisory verdict
+    const maxProb = Math.max(...hourlyRows.map(r => r.prob));
+    const maxPrecip = Math.max(...hourlyRows.map(r => parseFloat(r.precip)));
+    const isRainy = maxProb >= 50 || maxPrecip >= 1.0;
+    const isStormy = cyb.weather_code >= 80 || kl.weather_code >= 80;
+
+    // Rider tips based on conditions
+    let tips = [];
+    if (isStormy) {
+      tips = [
+        { icon: '🧥', text: 'Full raincoat & waterproof gear mandatory' },
+        { icon: '⚠️', text: 'Thunderstorm active — consider delaying travel' },
+        { icon: '👁️', text: 'Reduced visibility — use headlights, ride slow' },
+        { icon: '🛣️', text: 'MEX puddle buildup likely on flat sections' },
+        { icon: '🏍️', text: 'Keep safe distance from trucks — spray hazard' },
+      ];
+    } else if (isRainy) {
+      tips = [
+        { icon: '🧥', text: 'Bring raincoat — rain likely during your ride' },
+        { icon: '🛣️', text: 'Wet roads — reduce speed on MEX curves' },
+        { icon: '👁️', text: 'Visor may fog up — crack it slightly for airflow' },
+        { icon: '🏍️', text: 'Avoid painted road markings — slippery when wet' },
+        { icon: '☕', text: 'Warm up with coffee when you arrive!' },
+      ];
+    } else {
+      tips = [
+        { icon: '😎', text: 'Clear skies — enjoy the ride!' },
+        { icon: '🧴', text: 'Sunny — sunscreen if riding without jacket' },
+        { icon: '💧', text: 'Stay hydrated — 28°C+ heat' },
+        { icon: '🛣️', text: 'MEX should be smooth — watch for usual traffic' },
+        { icon: '🏍️', text: 'Good riding conditions — stay alert!' },
+      ];
+    }
+
+    let verdictText, verdictClass;
+    if (isStormy) {
+      verdictText = '⛈️ RAINCOAT ON — Thunderstorm active!';
+      verdictClass = 'rain';
+    } else if (isRainy) {
+      verdictText = '🌧️ RAINCOAT RECOMMENDED — Rain expected';
+      verdictClass = 'rain';
+    } else {
+      verdictText = '☀️ NO RAINCOAT NEEDED — Clear conditions';
+      verdictClass = 'clear';
+    }
+
+    body.innerHTML = `
+      <div class="weather-route">
+        <div class="weather-location">
+          <div class="weather-location-label">Cyberjaya</div>
+          <div class="weather-location-icon">${getWeatherEmoji(cyb.weather_code)}</div>
+          <div class="weather-location-temp">${Math.round(cyb.temperature_2m)}°</div>
+          <div class="weather-location-desc">${getWeatherDesc(cyb.weather_code)}</div>
+        </div>
+        <div class="weather-location">
+          <div class="weather-location-label">Jln Klang Lama</div>
+          <div class="weather-location-icon">${getWeatherEmoji(kl.weather_code)}</div>
+          <div class="weather-location-temp">${Math.round(kl.temperature_2m)}°</div>
+          <div class="weather-location-desc">${getWeatherDesc(kl.weather_code)}</div>
+        </div>
+      </div>
+
+      <div class="weather-advisory">
+        <div class="weather-advisory-title">🏍️ Rider Advisory — via MEX</div>
+        <div class="weather-advisory-verdict ${verdictClass}">${verdictText}</div>
+      </div>
+
+      <div class="weather-hourly">
+        <div class="weather-hourly-title">Next ${hourlyRows.length} Hours</div>
+        ${hourlyRows.map(r => `
+          <div class="weather-hourly-row">
+            <span class="time">${r.time}</span>
+            <span class="icon">${r.icon}</span>
+            <span class="prob">${r.prob}%</span>
+            <span class="precip">${r.precip} mm</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="weather-tips">
+        <div class="weather-tips-title">🏍️ Rider Tips</div>
+        ${tips.map(t => `
+          <div class="weather-tip">
+            <span class="weather-tip-icon">${t.icon}</span>
+            <span>${t.text}</span>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="weather-updated">Last updated: ${now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', minute: '2-digit', hour12: true })} MYT</div>
+    `;
+  } catch (err) {
+    body.innerHTML = `<div class="weather-error">⚠️ Failed to fetch weather data.<br>Try again later.<br><small>${err.message}</small></div>`;
+  }
 }
