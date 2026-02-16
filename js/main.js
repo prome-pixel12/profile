@@ -2,7 +2,14 @@
    MochaLulu — Interactive JS
    ========================================== */
 
+// Prevent browser from restoring scroll position on reload
+if ('scrollRestoration' in history) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
 document.addEventListener('DOMContentLoaded', () => {
+  window.scrollTo(0, 0);
   initBootSequence();
   initThemeToggle();
   initLocalTime();
