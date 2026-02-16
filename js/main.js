@@ -3,6 +3,9 @@
    ========================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initBootSequence();
+  initThemeToggle();
+  initLocalTime();
   initScrollReveal();
   initFloatingNav();
   initFAQ();
@@ -10,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSmoothScroll();
   initParallaxShapes();
   initTypingEffect();
+  initSmoothSectionTransitions();
 });
 
 /* ---------- Scroll Reveal ---------- */
@@ -238,4 +242,135 @@ function retryError() {
     'Link.exe has stopped responding. Blame the firewall.',
   ];
   detail.textContent = messages[Math.floor(Math.random() * messages.length)];
+}
+
+/* ---------- OS Boot Sequence ---------- */
+function initBootSequence() {
+  // Skip boot if returning visitor (session)
+  if (sessionStorage.getItem('booted')) {
+    const bootScreen = document.getElementById('bootScreen');
+    if (bootScreen) bootScreen.classList.add('done');
+    return;
+  }
+
+  document.body.classList.add('boot-active');
+
+  const lines = [
+    { text: 'BIOS v4.04 — MochaLulu Systems Inc.', delay: 0, color: '#a29bfe' },
+    { text: 'Checking hardware... OK', delay: 300, color: '#00b894' },
+    { text: 'Loading kernel: mochalulu_os_x64.bin', delay: 500, color: '#dfe6e9' },
+    { text: 'Initializing cat_meme_driver.sys......... OK', delay: 800, color: '#00b894' },
+    { text: 'Mounting /dev/coffee ............... OK', delay: 1100, color: '#00b894' },
+    { text: 'Starting sysadmin_services.d', delay: 1400, color: '#dfe6e9' },
+    { text: '  → nginx.service          [ACTIVE]', delay: 1600, color: '#00b894' },
+    { text: '  → docker.service         [ACTIVE]', delay: 1750, color: '#00b894' },
+    { text: '  → ssh.service            [ACTIVE]', delay: 1900, color: '#00b894' },
+    { text: '  → firewall.service       [ACTIVE]', delay: 2050, color: '#fdcb6e' },
+    { text: 'Loading user profile: MochaLulu', delay: 2300, color: '#a29bfe' },
+    { text: 'Welcome back, MochaLulu! ☕', delay: 2600, color: '#6c5ce7' },
+    { text: '', delay: 2800 },
+    { text: 'System ready. Launching desktop...', delay: 2900, color: '#00b894' },
+  ];
+
+  const container = document.getElementById('bootLines');
+  const progressFill = document.getElementById('bootProgressFill');
+  const bootScreen = document.getElementById('bootScreen');
+  const totalDuration = 3400;
+
+  lines.forEach(({ text, delay, color }) => {
+    setTimeout(() => {
+      const line = document.createElement('div');
+      line.textContent = text;
+      if (color) line.style.color = color;
+      container.appendChild(line);
+      container.scrollTop = container.scrollHeight;
+      // Update progress bar
+      const progress = Math.min((delay / totalDuration) * 100, 100);
+      progressFill.style.width = progress + '%';
+    }, delay);
+  });
+
+  setTimeout(() => {
+    progressFill.style.width = '100%';
+  }, totalDuration - 400);
+
+  setTimeout(() => {
+    bootScreen.classList.add('done');
+    document.body.classList.remove('boot-active');
+    sessionStorage.setItem('booted', 'true');
+  }, totalDuration);
+}
+
+/* ---------- Theme Toggle ---------- */
+function initThemeToggle() {
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme');
+
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+
+  toggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'light' ? 'dark' : 'light';
+
+    if (next === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+
+    localStorage.setItem('theme', next);
+
+    // Fun click feedback
+    toggle.style.transform = 'rotate(360deg) scale(1.2)';
+    setTimeout(() => {
+      toggle.style.transform = '';
+    }, 400);
+  });
+}
+
+/* ---------- Local Time Display ---------- */
+function initLocalTime() {
+  const timeEl = document.getElementById('localTime');
+  if (!timeEl) return;
+
+  function updateTime() {
+    const now = new Date();
+    const hours = now.getHours();
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const secs = String(now.getSeconds()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const h12 = hours % 12 || 12;
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'local';
+    const shortTz = tz.split('/').pop().replace(/_/g, ' ');
+    timeEl.textContent = `${h12}:${mins}:${secs} ${ampm} — ${shortTz}`;
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+}
+
+/* ---------- Smooth Section Transitions ---------- */
+function initSmoothSectionTransitions() {
+  const sections = document.querySelectorAll('.section');
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    },
+    { threshold: 0.05, rootMargin: '0px 0px -20px 0px' }
+  );
+
+  sections.forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(20px)';
+    section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    observer.observe(section);
+  });
 }

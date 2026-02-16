@@ -24,6 +24,41 @@
   --font-mono: 'Space Mono', monospace;
 }
 
+/* Light mode overrides */
+[data-theme="light"] {
+  --bg: #f0f0f5;
+  --bg-light: #e8e8ef;
+  --bg-card: #ffffff;
+  --text: #2d3436;
+  --text-dim: #636e72;
+  --text-dark: #b2bec3;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .hero-name {
+  background: linear-gradient(135deg, var(--primary), #5a4bd1);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+[data-theme="light"] .floating-nav {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(108, 92, 231, 0.15);
+}
+
+[data-theme="light"] .error-window {
+  background: #fff;
+}
+
+[data-theme="light"] .error-body,
+[data-theme="light"] .error-footer {
+  background: #fff;
+}
+
 /* ---------- Reset & Base ---------- */
 *, *::before, *::after {
   margin: 0;
@@ -42,6 +77,12 @@ body {
   color: var(--text);
   overflow-x: hidden;
   line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Body locked during boot */
+body.boot-active {
+  overflow: hidden;
 }
 
 a {
@@ -77,6 +118,23 @@ img {
   position: relative;
   padding: 40px 20px 60px;
   overflow: hidden;
+  background: linear-gradient(-45deg, #1a1025, #231535, #1a1030, #2a1a3e);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+[data-theme="light"] .hero {
+  background: linear-gradient(-45deg, #f0f0f5, #e8e8ef, #ede7f6, #f5f0ff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 0%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Floating background shapes */
@@ -216,6 +274,59 @@ img {
   text-transform: lowercase;
 }
 
+/* Status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 6px 16px;
+  background: rgba(0, 184, 148, 0.12);
+  border: 1px solid rgba(0, 184, 148, 0.3);
+  border-radius: 20px;
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 500;
+  animation: fadeInUp 1s ease-out 0.6s both;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent); }
+  50% { opacity: 0.5; box-shadow: 0 0 16px var(--accent); }
+}
+
+/* Local time widget */
+.time-widget {
+  margin-top: 12px;
+  animation: fadeInUp 1s ease-out 0.8s both;
+}
+
+.time-widget-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: var(--bg-card);
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+}
+
+.time-icon {
+  color: var(--primary-light);
+}
+
 /* Navigation icons row */
 .nav-icons {
   display: flex;
@@ -280,10 +391,6 @@ img {
 /* ==========================================
    SECTIONS (shared)
    ========================================== */
-.section {
-  padding: 80px 20px;
-  position: relative;
-}
 
 .section-inner {
   max-width: 900px;
@@ -1015,6 +1122,205 @@ img {
 }
 
 /* ==========================================
+   OS BOOT SCREEN
+   ========================================== */
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  background: #0d0d0d;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.boot-screen.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.boot-window {
+  width: 520px;
+  max-width: 92vw;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 12px 60px rgba(108, 92, 231, 0.3), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  animation: bootWindowAppear 0.5s ease-out;
+}
+
+@keyframes bootWindowAppear {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.boot-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, #6c5ce7 0%, #5a4bd1 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fff;
+  user-select: none;
+}
+
+.boot-titlebar-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.boot-titlebar-dots .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.dot-yellow { background: #fdcb6e; }
+.dot-green { background: #00b894; }
+.dot-red { background: #e17055; }
+
+.boot-terminal {
+  background: #1e1e2e;
+  padding: 20px;
+  min-height: 200px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: #00b894;
+  line-height: 1.8;
+  position: relative;
+}
+
+.boot-lines {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.boot-cursor {
+  display: inline;
+  animation: bootBlink 0.6s step-end infinite;
+  color: #00b894;
+  font-family: var(--font-mono);
+}
+
+@keyframes bootBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.boot-progress-bar {
+  height: 4px;
+  background: #2d2d3f;
+}
+
+.boot-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6c5ce7, #00b894);
+  transition: width 0.3s ease;
+}
+
+/* ==========================================
+   THEME TOGGLE
+   ========================================== */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(108, 92, 231, 0.3);
+  background: var(--bg-card);
+  color: var(--primary-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(8px);
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary-light);
+  transform: rotate(20deg) scale(1.1);
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Show sun in dark mode, moon in light mode */
+.theme-icon-moon { display: none; }
+.theme-icon-sun { display: block; }
+
+[data-theme="light"] .theme-icon-moon { display: block; }
+[data-theme="light"] .theme-icon-sun { display: none; }
+
+/* ==========================================
+   TECH STACK MARQUEE
+   ========================================== */
+.marquee-container {
+  overflow: hidden;
+  margin-bottom: 32px;
+  padding: 12px 0;
+  mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+}
+
+.marquee-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: marqueeScroll 30s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: var(--bg-card);
+  border-radius: 20px;
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: var(--transition);
+}
+
+.marquee-item:hover {
+  border-color: var(--primary-light);
+  color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.marquee-icon {
+  font-size: 1.1rem;
+}
+
+/* ==========================================
+   SMOOTH SECTION TRANSITIONS
+   ========================================== */
+.section {
+  padding: 80px 20px;
+  position: relative;
+  transition: background 0.4s ease;
+}
+
+/* ==========================================
    RESPONSIVE
    ========================================== */
 @media (max-width: 768px) {
@@ -1065,5 +1371,23 @@ img {
   }
   .links-grid {
     grid-template-columns: 1fr;
+  }
+  .boot-terminal {
+    font-size: 0.65rem;
+    padding: 14px;
+    min-height: 160px;
+  }
+  .theme-toggle {
+    width: 38px;
+    height: 38px;
+    top: 14px;
+    right: 14px;
+  }
+  .status-badge {
+    font-size: 0.75rem;
+    padding: 5px 12px;
+  }
+  .time-widget-inner {
+    font-size: 0.68rem;
   }
 }
