@@ -26,11 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ---------- Faah Sound ---------- */
+const faahAudio = new Audio('audio/faah.mp3');
+faahAudio.preload = 'auto';
+faahAudio.volume = 0.5;
+
 function playFaah() {
   try {
-    const audio = new Audio('audio/faah.mp3');
-    audio.volume = 0.5;
-    audio.play().catch(() => {});
+    faahAudio.currentTime = 0;
+    faahAudio.play().catch(() => {});
   } catch (e) { /* silent fail */ }
 }
 
