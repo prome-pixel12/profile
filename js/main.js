@@ -337,14 +337,14 @@ function initLocalTime() {
 
   function updateTime() {
     const now = new Date();
-    const hours = now.getHours();
-    const mins = String(now.getMinutes()).padStart(2, '0');
-    const secs = String(now.getSeconds()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const h12 = hours % 12 || 12;
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'local';
-    const shortTz = tz.split('/').pop().replace(/_/g, ' ');
-    timeEl.textContent = `${h12}:${mins}:${secs} ${ampm} — ${shortTz}`;
+    const timeStr = now.toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+    timeEl.textContent = `${timeStr} — Kuala Lumpur`;
   }
 
   updateTime();
