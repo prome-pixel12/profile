@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLocalTime();
   initScrollReveal();
   initFloatingNav();
+  initStartMenu();
   initFAQ();
   initContactForm();
   initSmoothScroll();
@@ -390,4 +391,116 @@ function initSmoothSectionTransitions() {
     section.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
     observer.observe(section);
   });
+}
+
+/* ---------- Start Menu ---------- */
+const pageLoadTime = Date.now();
+
+function initStartMenu() {
+  const menu = document.getElementById('startMenu');
+  const btn = document.getElementById('startBtn');
+
+  // Detect visitor OS
+  const osEl = document.getElementById('smOS');
+  const ua = navigator.userAgent;
+  if (/Windows/.test(ua)) osEl.textContent = 'Windows';
+  else if (/Mac/.test(ua)) osEl.textContent = 'macOS';
+  else if (/Linux/.test(ua)) osEl.textContent = 'Linux';
+  else if (/Android/.test(ua)) osEl.textContent = 'Android';
+  else if (/iPhone|iPad/.test(ua)) osEl.textContent = 'iOS';
+  else osEl.textContent = 'Unknown';
+
+  // Detect browser
+  const brEl = document.getElementById('smBrowser');
+  if (/Edg\//.test(ua)) brEl.textContent = 'Edge';
+  else if (/Chrome/.test(ua)) brEl.textContent = 'Chrome';
+  else if (/Firefox/.test(ua)) brEl.textContent = 'Firefox';
+  else if (/Safari/.test(ua)) brEl.textContent = 'Safari';
+  else brEl.textContent = 'Other';
+
+  // Uptime counter
+  function updateUptime() {
+    const diff = Math.floor((Date.now() - pageLoadTime) / 1000);
+    const h = Math.floor(diff / 3600);
+    const m = Math.floor((diff % 3600) / 60);
+    const s = diff % 60;
+    let str = '';
+    if (h > 0) str += h + 'h ';
+    if (m > 0 || h > 0) str += m + 'm ';
+    str += s + 's';
+    document.getElementById('smUptime').textContent = str;
+  }
+  setInterval(updateUptime, 1000);
+
+  // Close menu on outside click
+  document.addEventListener('click', (e) => {
+    if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+      closeStartMenu();
+    }
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menu.classList.contains('open')) {
+      closeStartMenu();
+    }
+  });
+}
+
+function toggleStartMenu() {
+  const menu = document.getElementById('startMenu');
+  const btn = document.getElementById('startBtn');
+  menu.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function closeStartMenu() {
+  const menu = document.getElementById('startMenu');
+  const btn = document.getElementById('startBtn');
+  menu.classList.remove('open');
+  btn.classList.remove('active');
+}
+
+function startMenuShutdown() {
+  closeStartMenu();
+  // Show boot screen as "shutdown" effect
+  const boot = document.getElementById('bootScreen');
+  if (boot) {
+    boot.style.display = 'flex';
+    boot.style.opacity = '1';
+    const termLines = boot.querySelectorAll('.boot-line');
+    termLines.forEach(l => l.remove());
+    const terminal = boot.querySelector('.boot-terminal');
+    const progress = boot.querySelector('.boot-progress-fill');
+    if (progress) progress.style.width = '0%';
+
+    const msgs = [
+      'Saving cat memes to disk...',
+      'Flushing system buffers...',
+      'Closing connection to the void...',
+      'Powering down...'
+    ];
+    msgs.forEach((msg, i) => {
+      setTimeout(() => {
+        const line = document.createElement('div');
+        line.className = 'boot-line';
+        line.textContent = '> ' + msg;
+        terminal.appendChild(line);
+      }, i * 600);
+    });
+    setTimeout(() => {
+      boot.style.background = '#000';
+      terminal.style.display = 'none';
+      const offMsg = document.createElement('div');
+      offMsg.style.cssText = 'color:#555;font-family:var(--font-mono);font-size:0.9rem;';
+      offMsg.textContent = 'It is now safe to close your browser.';
+      boot.querySelector('.boot-content').appendChild(offMsg);
+    }, 2800);
+  }
+}
+
+function startMenuRestart() {
+  closeStartMenu();
+  sessionStorage.removeItem('booted');
+  location.reload();
 }
