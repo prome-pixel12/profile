@@ -76,6 +76,13 @@ function initFloatingNav() {
       taskbar.classList.remove('visible');
     }
 
+    // Hide scroll hint after scrolling
+    const scrollHint = document.querySelector('.scroll-hint');
+    if (scrollHint) {
+      scrollHint.style.opacity = scrollY > 80 ? '0' : '';
+      scrollHint.style.pointerEvents = scrollY > 80 ? 'none' : '';
+    }
+
     // Active section detection
     let current = '';
     sections.forEach(section => {
@@ -502,7 +509,7 @@ function startMenuShutdown() {
       const offMsg = document.createElement('div');
       offMsg.style.cssText = 'color:#555;font-family:var(--font-mono);font-size:0.9rem;';
       offMsg.textContent = 'It is now safe to close your browser.';
-      boot.querySelector('.boot-content').appendChild(offMsg);
+      boot.querySelector('.boot-window').appendChild(offMsg);
     }, 2800);
   }
 }
