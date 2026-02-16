@@ -186,6 +186,8 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
 }
 
 .hero-greeting {
@@ -352,6 +354,8 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
 }
 
 .about-text p {
@@ -718,6 +722,7 @@ img {
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center;
 }
 
 .footer-copy {
