@@ -160,6 +160,7 @@
           <div class="marquee-item"><span class="marquee-icon">&#128039;</span> RHEL / RHEV</div>
           <div class="marquee-item"><span class="marquee-icon">&#128640;</span> TeamCity</div>
           <div class="marquee-item"><span class="marquee-icon">&#129418;</span> GitLab</div>
+          <div class="marquee-item"><span class="marquee-icon">&#9881;&#65039;</span> Ansible</div>
           <div class="marquee-item"><span class="marquee-icon">&#9878;&#65039;</span> HAProxy</div>
           <div class="marquee-item"><span class="marquee-icon">&#128154;</span> Keepalived</div>
           <div class="marquee-item"><span class="marquee-icon">&#128737;&#65039;</span> DMZ</div>
@@ -178,7 +179,7 @@
         </div>
         <div class="about-text">
           <p>hey there! <strong>MochaLulu</strong> here — your friendly neighborhood <strong>System Administrator</strong>.</p>
-          <p>i keep servers running, dashboards green, and infrastructure in check. from monitoring with <strong>Grafana</strong> &amp; <strong>Zabbix</strong> to managing VMs on <strong>RHEV</strong>, deploying through <strong>TeamCity</strong> &amp; <strong>GitLab</strong>, and keeping services highly available behind <strong>HAProxy</strong> — i make sure things stay up.</p>
+          <p>i keep servers running, dashboards green, and infrastructure in check. from monitoring with <strong>Grafana</strong> &amp; <strong>Zabbix</strong> to managing VMs on <strong>RHEV</strong>, deploying through <strong>TeamCity</strong>, <strong>GitLab</strong> &amp; <strong>Ansible</strong>, and keeping services highly available behind <strong>HAProxy</strong> — i make sure things stay up.</p>
           <p>i'm passionate about infrastructure automation, uptime monitoring, identity management, and making systems that just <em>work</em>.</p>
           <div class="about-tags">
             <span class="tag">Grafana</span>
@@ -187,6 +188,7 @@
             <span class="tag">RHEL / RHEV</span>
             <span class="tag">TeamCity</span>
             <span class="tag">GitLab</span>
+            <span class="tag">Ansible</span>
             <span class="tag">HAProxy</span>
             <span class="tag">Keepalived</span>
             <span class="tag">Docker</span>
@@ -295,20 +297,26 @@
               <rect width="300" height="180" fill="#2d3436" rx="8"/>
               <text x="150" y="24" text-anchor="middle" fill="#a29bfe" font-family="monospace" font-size="13">CI/CD Pipeline</text>
               <!-- GitLab -->
-              <rect x="15" y="40" width="80" height="36" rx="6" fill="#e24329" opacity="0.15" stroke="#e24329" stroke-width="1"/>
-              <text x="55" y="62" text-anchor="middle" fill="#e24329" font-family="monospace" font-size="10">GitLab</text>
+              <rect x="10" y="40" width="62" height="36" rx="6" fill="#e24329" opacity="0.15" stroke="#e24329" stroke-width="1"/>
+              <text x="41" y="62" text-anchor="middle" fill="#e24329" font-family="monospace" font-size="9">GitLab</text>
               <!-- Arrow -->
-              <line x1="100" y1="58" x2="125" y2="58" stroke="#636e72" stroke-width="2" stroke-dasharray="4"/>
-              <polygon points="125,54 133,58 125,62" fill="#636e72"/>
+              <line x1="76" y1="58" x2="90" y2="58" stroke="#636e72" stroke-width="2" stroke-dasharray="4"/>
+              <polygon points="90,54 98,58 90,62" fill="#636e72"/>
               <!-- TeamCity -->
-              <rect x="138" y="40" width="80" height="36" rx="6" fill="#0984e3" opacity="0.15" stroke="#0984e3" stroke-width="1"/>
-              <text x="178" y="62" text-anchor="middle" fill="#0984e3" font-family="monospace" font-size="10">TeamCity</text>
+              <rect x="102" y="40" width="70" height="36" rx="6" fill="#0984e3" opacity="0.15" stroke="#0984e3" stroke-width="1"/>
+              <text x="137" y="62" text-anchor="middle" fill="#0984e3" font-family="monospace" font-size="9">TeamCity</text>
               <!-- Arrow -->
-              <line x1="223" y1="58" x2="248" y2="58" stroke="#636e72" stroke-width="2" stroke-dasharray="4"/>
-              <polygon points="248,54 256,58 248,62" fill="#636e72"/>
+              <line x1="176" y1="58" x2="190" y2="58" stroke="#636e72" stroke-width="2" stroke-dasharray="4"/>
+              <polygon points="190,54 198,58 190,62" fill="#636e72"/>
+              <!-- Ansible -->
+              <rect x="202" y="40" width="62" height="36" rx="6" fill="#e74c3c" opacity="0.15" stroke="#e74c3c" stroke-width="1"/>
+              <text x="233" y="62" text-anchor="middle" fill="#e74c3c" font-family="monospace" font-size="9">Ansible</text>
+              <!-- Arrow -->
+              <line x1="268" y1="58" x2="276" y2="58" stroke="#636e72" stroke-width="2" stroke-dasharray="4"/>
+              <polygon points="276,54 284,58 276,62" fill="#636e72"/>
               <!-- Deploy -->
-              <rect x="260" y="44" width="28" height="28" rx="14" fill="#00b894" opacity="0.2" stroke="#00b894" stroke-width="1"/>
-              <text x="274" y="62" text-anchor="middle" fill="#00b894" font-size="14">&#10003;</text>
+              <rect x="270" y="44" width="24" height="28" rx="12" fill="#00b894" opacity="0.2" stroke="#00b894" stroke-width="1"/>
+              <text x="282" y="62" text-anchor="middle" fill="#00b894" font-size="12">&#10003;</text>
               <!-- Docker containers -->
               <rect x="15" y="95" width="270" height="40" rx="4" fill="#1e1e2e" stroke="#0984e3" stroke-width="1"/>
               <text x="25" y="112" fill="#0984e3" font-family="monospace" font-size="9">CONTAINERS</text>
@@ -320,11 +328,11 @@
               <text x="217" y="116" text-anchor="middle" fill="#dfe6e9" font-size="8">worker</text>
               <!-- Build log -->
               <text x="20" y="155" fill="#00b894" font-family="monospace" font-size="9">[BUILD #847] SUCCESS</text>
-              <text x="20" y="170" fill="#636e72" font-family="monospace" font-size="8">deployed to prod via TeamCity → Docker</text>
+              <text x="20" y="170" fill="#636e72" font-family="monospace" font-size="8">deployed via TeamCity + Ansible → Docker</text>
             </svg>
           </div>
           <h3>CI/CD &amp; Containerization</h3>
-          <p>GitLab repos, TeamCity build pipelines, and Docker container deployments.</p>
+          <p>GitLab repos, TeamCity builds, Ansible playbooks, and Docker container deployments.</p>
         </div>
 
         <!-- DMZ / Load Balancing / HA -->
@@ -416,7 +424,7 @@
             <span class="faq-arrow">&#9660;</span>
           </button>
           <div class="faq-answer">
-            <p>Grafana & Zabbix for monitoring, Uptime Kuma for status pages, RHEV for VM management, GitLab + TeamCity for CI/CD, Docker for containers, HAProxy & Keepalived for HA, NetBox for IPAM, and Red Hat IdM for identity — all held together by SSH sessions, Bash scripts, and lots of coffee.</p>
+            <p>Grafana & Zabbix for monitoring, Uptime Kuma for status pages, RHEV for VM management, GitLab + TeamCity + Ansible for CI/CD, Docker for containers, HAProxy & Keepalived for HA, NetBox for IPAM, and Red Hat IdM for identity — all held together by SSH sessions, Bash scripts, and lots of coffee.</p>
           </div>
         </div>
         <div class="faq-item">
