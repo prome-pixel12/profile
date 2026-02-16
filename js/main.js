@@ -22,7 +22,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initParallaxShapes();
   initTypingEffect();
   initSmoothSectionTransitions();
+  initAvatarEasterEgg();
 });
+
+/* ---------- Faah Sound ---------- */
+function playFaah() {
+  try {
+    const audio = new Audio('audio/faah.mp3');
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+  } catch (e) { /* silent fail */ }
+}
 
 /* ---------- Scroll Reveal ---------- */
 function initScrollReveal() {
@@ -226,19 +236,8 @@ function showError404(socialName) {
   overlay.classList.add('visible');
   win.classList.add('visible');
 
-  // Play a subtle audio beep (system error sound feel)
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = 440;
-    osc.type = 'square';
-    gain.gain.value = 0.08;
-    osc.start();
-    osc.stop(ctx.currentTime + 0.15);
-  } catch (e) { /* silent fail */ }
+  // Play faah sound on error
+  playFaah();
 }
 
 function closeError404(event) {
@@ -325,6 +324,7 @@ function initBootSequence() {
 
   setTimeout(() => {
     progressFill.style.width = '100%';
+    playFaah();
   }, totalDuration - 400);
 
   setTimeout(() => {
@@ -506,6 +506,7 @@ function startMenuShutdown() {
     setTimeout(() => {
       boot.style.background = '#000';
       terminal.style.display = 'none';
+      playFaah();
       const offMsg = document.createElement('div');
       offMsg.style.cssText = 'color:#555;font-family:var(--font-mono);font-size:0.9rem;';
       offMsg.textContent = 'It is now safe to close your browser.';
@@ -516,6 +517,38 @@ function startMenuShutdown() {
 
 function startMenuRestart() {
   closeStartMenu();
+  playFaah();
   sessionStorage.removeItem('booted');
   location.reload();
+}
+
+/* ---------- Avatar Easter Egg ---------- */
+function initAvatarEasterEgg() {
+  const avatar = document.querySelector('.hero .avatar');
+  if (!avatar) return;
+
+  let clickCount = 0;
+  let clickTimer = null;
+
+  avatar.style.cursor = 'pointer';
+
+  avatar.addEventListener('click', () => {
+    clickCount++;
+    clearTimeout(clickTimer);
+
+    if (clickCount >= 5) {
+      clickCount = 0;
+      playFaah();
+      // Spin the avatar for fun
+      avatar.style.transition = 'transform 0.6s ease';
+      avatar.style.transform = 'rotate(360deg) scale(1.2)';
+      setTimeout(() => {
+        avatar.style.transform = '';
+      }, 700);
+    }
+
+    clickTimer = setTimeout(() => {
+      clickCount = 0;
+    }, 1500);
+  });
 }
