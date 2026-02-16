@@ -419,6 +419,7 @@ img {
   border: 2px solid transparent;
   transition: var(--transition);
   box-shadow: var(--shadow);
+  cursor: pointer;
 }
 
 .link-card:hover {
@@ -463,6 +464,209 @@ img {
 .link-card-text span {
   font-size: 0.82rem;
   color: var(--text-dark);
+}
+
+/* ==========================================
+   ERROR 404 POPUP (OS-style window)
+   ========================================== */
+.error-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.error-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.error-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 420px;
+  max-width: 92vw;
+  background: #f0f0f0;
+  border: 1px solid #999;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+}
+
+.error-window.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.error-window.shake {
+  animation: windowShake 0.4s ease;
+}
+
+@keyframes windowShake {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  15% { transform: translate(calc(-50% + 8px), -50%) scale(1); }
+  30% { transform: translate(calc(-50% - 8px), -50%) scale(1); }
+  45% { transform: translate(calc(-50% + 5px), -50%) scale(1); }
+  60% { transform: translate(calc(-50% - 5px), -50%) scale(1); }
+  75% { transform: translate(calc(-50% + 2px), -50%) scale(1); }
+}
+
+/* Title bar */
+.error-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(180deg, #e17055 0%, #d63031 100%);
+  padding: 8px 12px;
+  cursor: default;
+  user-select: none;
+}
+
+.error-titlebar-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.error-titlebar-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.error-titlebar-buttons button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.15s;
+  line-height: 1;
+}
+
+.error-btn-minimize {
+  background: #fdcb6e;
+  color: #856404;
+}
+.error-btn-minimize:hover {
+  background: #f0b429;
+  transform: scale(1.1);
+}
+
+.error-btn-maximize {
+  background: #00b894;
+  color: #065f46;
+}
+.error-btn-maximize:hover {
+  background: #00a383;
+  transform: scale(1.1);
+}
+
+.error-btn-close {
+  background: #ff6b6b;
+  color: #fff;
+}
+.error-btn-close:hover {
+  background: #ee5a24;
+  transform: scale(1.1);
+}
+
+/* Body */
+.error-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px 24px 16px;
+  background: #f0f0f0;
+}
+
+.error-icon {
+  flex-shrink: 0;
+}
+
+.error-message {
+  flex: 1;
+}
+
+.error-title-text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2d3436;
+  margin-bottom: 6px;
+}
+
+.error-detail {
+  font-size: 0.88rem;
+  color: #636e72;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.error-code {
+  font-size: 0.78rem;
+  color: #b2bec3;
+  line-height: 1.5;
+}
+
+.error-code code {
+  background: #dfe6e9;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: #e17055;
+}
+
+/* Footer buttons */
+.error-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 24px 18px;
+  background: #f0f0f0;
+}
+
+.error-ok-btn, .error-retry-btn {
+  padding: 8px 28px;
+  border: 1px solid #b2bec3;
+  border-radius: 4px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.error-ok-btn {
+  background: #6c5ce7;
+  color: #fff;
+  border-color: #6c5ce7;
+}
+.error-ok-btn:hover {
+  background: #5a4bd1;
+}
+
+.error-retry-btn {
+  background: #fff;
+  color: #2d3436;
+}
+.error-retry-btn:hover {
+  background: #dfe6e9;
 }
 
 /* ==========================================
