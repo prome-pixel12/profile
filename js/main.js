@@ -136,7 +136,6 @@ function initFAQ() {
 /* ---------- Contact Form ---------- */
 function initContactForm() {
   const form = document.getElementById('contactForm');
-  const success = document.getElementById('formSuccess');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -147,11 +146,13 @@ function initContactForm() {
     btn.disabled = true;
     btn.style.opacity = '0.7';
 
-    // Simulate send
+    // Trigger error popup after fake loading
     setTimeout(() => {
-      form.style.display = 'none';
-      success.classList.add('show');
-    }, 1200);
+      btn.innerHTML = '<span>send message</span><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      showError404('Contact Form');
+    }, 1500);
   });
 }
 
@@ -282,25 +283,25 @@ function initBootSequence() {
 
   const lines = [
     { text: 'BIOS v4.04 — MochaLulu Systems Inc.', delay: 0, color: '#a29bfe' },
-    { text: 'Checking hardware... OK', delay: 300, color: '#00b894' },
-    { text: 'Loading kernel: mochalulu_os_x64.bin', delay: 500, color: '#dfe6e9' },
-    { text: 'Initializing cat_meme_driver.sys......... OK', delay: 800, color: '#00b894' },
-    { text: 'Mounting /dev/coffee ............... OK', delay: 1100, color: '#00b894' },
-    { text: 'Starting sysadmin_services.d', delay: 1400, color: '#dfe6e9' },
-    { text: '  → nginx.service          [ACTIVE]', delay: 1600, color: '#00b894' },
-    { text: '  → docker.service         [ACTIVE]', delay: 1750, color: '#00b894' },
-    { text: '  → ssh.service            [ACTIVE]', delay: 1900, color: '#00b894' },
-    { text: '  → firewall.service       [ACTIVE]', delay: 2050, color: '#fdcb6e' },
-    { text: 'Loading user profile: MochaLulu', delay: 2300, color: '#a29bfe' },
-    { text: 'Welcome back, MochaLulu! ☕', delay: 2600, color: '#6c5ce7' },
-    { text: '', delay: 2800 },
-    { text: 'System ready. Launching desktop...', delay: 2900, color: '#00b894' },
+    { text: 'Checking hardware... OK', delay: 500, color: '#00b894' },
+    { text: 'Loading kernel: mochalulu_os_x64.bin', delay: 900, color: '#dfe6e9' },
+    { text: 'Initializing cat_meme_driver.sys......... OK', delay: 1400, color: '#00b894' },
+    { text: 'Mounting /dev/coffee ............... OK', delay: 1900, color: '#00b894' },
+    { text: 'Starting sysadmin_services.d', delay: 2500, color: '#dfe6e9' },
+    { text: '  → nginx.service          [ACTIVE]', delay: 2900, color: '#00b894' },
+    { text: '  → docker.service         [ACTIVE]', delay: 3200, color: '#00b894' },
+    { text: '  → ssh.service            [ACTIVE]', delay: 3500, color: '#00b894' },
+    { text: '  → firewall.service       [ACTIVE]', delay: 3800, color: '#fdcb6e' },
+    { text: 'Loading user profile: MochaLulu', delay: 4300, color: '#a29bfe' },
+    { text: 'Welcome back, Ahmad Asyraf! ☕', delay: 4800, color: '#6c5ce7' },
+    { text: '', delay: 5200 },
+    { text: 'System ready. Launching desktop...', delay: 5500, color: '#00b894' },
   ];
 
   const container = document.getElementById('bootLines');
   const progressFill = document.getElementById('bootProgressFill');
   const bootScreen = document.getElementById('bootScreen');
-  const totalDuration = 3400;
+  const totalDuration = 6200;
 
   lines.forEach(({ text, delay, color }) => {
     setTimeout(() => {
