@@ -49,23 +49,23 @@ function initScrollReveal() {
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
 
-/* ---------- Floating Nav ---------- */
+/* ---------- OS Taskbar ---------- */
 function initFloatingNav() {
-  const nav = document.getElementById('floatingNav');
+  const taskbar = document.getElementById('taskbar');
   const sections = document.querySelectorAll('section[id]');
-  const links = nav.querySelectorAll('.fnav-link');
+  const apps = taskbar.querySelectorAll('.taskbar-app');
+  const clockEl = document.getElementById('taskbarClock');
 
-  // Show/hide on scroll
-  let lastScroll = 0;
   const heroHeight = document.getElementById('home').offsetHeight;
 
+  // Show/hide taskbar on scroll
   window.addEventListener('scroll', () => {
     const scrollY = window.scrollY;
 
-    if (scrollY > heroHeight * 0.6) {
-      nav.classList.add('visible');
+    if (scrollY > heroHeight * 0.4) {
+      taskbar.classList.add('visible');
     } else {
-      nav.classList.remove('visible');
+      taskbar.classList.remove('visible');
     }
 
     // Active section detection
@@ -77,15 +77,32 @@ function initFloatingNav() {
       }
     });
 
-    links.forEach(link => {
-      link.classList.remove('active');
-      if (link.dataset.section === current) {
-        link.classList.add('active');
+    apps.forEach(app => {
+      app.classList.remove('active');
+      if (app.dataset.section === current) {
+        app.classList.add('active');
       }
     });
-
-    lastScroll = scrollY;
   });
+
+  // Taskbar clock (Kuala Lumpur time)
+  function updateTaskbarClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+    const dateStr = now.toLocaleDateString('en-US', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      month: 'short',
+      day: 'numeric'
+    });
+    clockEl.textContent = `${timeStr}  ${dateStr}`;
+  }
+  updateTaskbarClock();
+  setInterval(updateTaskbarClock, 30000);
 }
 
 /* ---------- FAQ Accordion ---------- */

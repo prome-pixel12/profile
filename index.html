@@ -4,6 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MochaLulu — System Administrator</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%236c5ce7'/%3E%3Ctext x='10' y='44' font-family='monospace' font-size='36' font-weight='bold' fill='%23fff'%3E%3E_%3C/text%3E%3C/svg%3E" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="MochaLulu — System Administrator" />
+  <meta property="og:description" content="hi! i'm MochaLulu — your friendly neighborhood System Administrator. I keep servers running, networks healthy, and infrastructure humming." />
+  <meta property="og:url" content="https://prome-pixel12.github.io/profile/" />
+  <meta property="og:image" content="https://prome-pixel12.github.io/profile/images/avatar.png" />
+  <meta property="og:site_name" content="MochaLulu" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="MochaLulu — System Administrator" />
+  <meta name="twitter:description" content="hi! i'm MochaLulu — your friendly neighborhood System Administrator." />
+  <meta name="twitter:image" content="https://prome-pixel12.github.io/profile/images/avatar.png" />
+
+  <meta name="description" content="MochaLulu — System Administrator. Keeping servers running, networks healthy, and infrastructure humming." />
+  <meta name="theme-color" content="#6c5ce7" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -411,26 +432,45 @@
     </div>
   </footer>
 
-  <!-- ========== FLOATING NAV (appears on scroll) ========== -->
-  <nav class="floating-nav" id="floatingNav">
-    <a href="#home" class="fnav-link active" data-section="home">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-    </a>
-    <a href="#about" class="fnav-link" data-section="about">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><circle cx="12" cy="8" r="4"/><ellipse cx="12" cy="18" rx="7" ry="4"/></svg>
-    </a>
-    <a href="#links" class="fnav-link" data-section="links">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
-    </a>
-    <a href="#work" class="fnav-link" data-section="work">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v11c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
-    </a>
-    <a href="#faq" class="fnav-link" data-section="faq">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
-    </a>
-    <a href="#contact" class="fnav-link" data-section="contact">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-    </a>
+  <!-- ========== OS TASKBAR (replaces floating nav) ========== -->
+  <nav class="taskbar" id="taskbar">
+    <div class="taskbar-inner">
+      <div class="taskbar-start">
+        <button class="taskbar-start-btn" id="startBtn" title="MochaLulu OS">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 5v14h18V5H3zm16 12H5V7h14v10z"/><rect x="7" y="9" width="4" height="3" fill="currentColor" opacity=".6"/><rect x="13" y="9" width="4" height="3" fill="currentColor" opacity=".6"/><rect x="7" y="14" width="4" height="2" fill="currentColor" opacity=".4"/><rect x="13" y="14" width="4" height="2" fill="currentColor" opacity=".4"/></svg>
+          <span>Start</span>
+        </button>
+      </div>
+      <div class="taskbar-apps">
+        <a href="#home" class="taskbar-app active" data-section="home" title="Home">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Home</span>
+        </a>
+        <a href="#about" class="taskbar-app" data-section="about" title="About">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><circle cx="12" cy="8" r="4"/><ellipse cx="12" cy="18" rx="7" ry="4"/></svg>
+          <span>About</span>
+        </a>
+        <a href="#links" class="taskbar-app" data-section="links" title="Links">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
+          <span>Links</span>
+        </a>
+        <a href="#work" class="taskbar-app" data-section="work" title="Work">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-2 .89-2 2v11c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+          <span>Work</span>
+        </a>
+        <a href="#faq" class="taskbar-app" data-section="faq" title="FAQ">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+          <span>FAQ</span>
+        </a>
+        <a href="#contact" class="taskbar-app" data-section="contact" title="Contact">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <span>Contact</span>
+        </a>
+      </div>
+      <div class="taskbar-tray">
+        <span class="taskbar-clock" id="taskbarClock"></span>
+      </div>
+    </div>
   </nav>
 
   <!-- ========== ERROR 404 POPUP ========== -->
