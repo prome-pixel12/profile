@@ -1860,9 +1860,29 @@ img {
   box-shadow: 0 6px 24px rgba(108, 92, 231, 0.6);
 }
 .weather-fab.active {
-  background: var(--card-bg);
+  background: var(--bg-card);
   color: var(--accent);
   border: 2px solid var(--accent);
+}
+
+/* Scrim behind weather panel */
+.weather-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 898;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.weather-scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+[data-theme="light"] .weather-scrim {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .weather-panel {
@@ -1872,15 +1892,25 @@ img {
   z-index: 899;
   width: 340px;
   max-height: 480px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 2px solid var(--primary);
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(108, 92, 231, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
   overflow: hidden;
   opacity: 0;
   transform: translateY(20px) scale(0.95);
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+[data-theme="light"] .weather-panel {
+  background: #ffffff;
+  border: 2px solid var(--primary);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(108, 92, 231, 0.15);
 }
 .weather-panel.open {
   opacity: 1;
@@ -1926,7 +1956,8 @@ img {
 }
 .weather-location {
   flex: 1;
-  background: var(--bg);
+  background: var(--bg-light);
+  border: 1px solid rgba(108, 92, 231, 0.15);
   border-radius: 8px;
   padding: 10px;
   text-align: center;
@@ -1956,10 +1987,12 @@ img {
 }
 
 .weather-advisory {
-  background: var(--bg);
+  background: var(--bg-light);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 14px;
+  border-left: 3px solid var(--accent);
+  border: 1px solid rgba(108, 92, 231, 0.15);
   border-left: 3px solid var(--accent);
 }
 .weather-advisory-title {
@@ -2015,7 +2048,8 @@ img {
 .weather-hourly-row .precip { width: 55px; text-align: right; color: #0984e3; }
 
 .weather-tips {
-  background: var(--bg);
+  background: var(--bg-light);
+  border: 1px solid rgba(108, 92, 231, 0.15);
   border-radius: 8px;
   padding: 12px;
 }

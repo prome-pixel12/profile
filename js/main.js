@@ -561,26 +561,40 @@ function initAvatarEasterEgg() {
 function initWeatherWidget() {
   const fab = document.getElementById('weatherFab');
   const panel = document.getElementById('weatherPanel');
+  const scrim = document.getElementById('weatherScrim');
   if (!fab || !panel) return;
 
   let fetched = false;
 
-  fab.addEventListener('click', () => {
-    const isOpen = panel.classList.contains('open');
-    panel.classList.toggle('open');
-    fab.classList.toggle('active');
-
-    if (!isOpen && !fetched) {
+  function openPanel() {
+    panel.classList.add('open');
+    fab.classList.add('active');
+    if (scrim) scrim.classList.add('open');
+    if (!fetched) {
       fetchWeatherData();
       fetched = true;
     }
+  }
+
+  function closePanel() {
+    panel.classList.remove('open');
+    fab.classList.remove('active');
+    if (scrim) scrim.classList.remove('open');
+  }
+
+  fab.addEventListener('click', () => {
+    panel.classList.contains('open') ? closePanel() : openPanel();
   });
+
+  // Close on scrim click
+  if (scrim) {
+    scrim.addEventListener('click', closePanel);
+  }
 
   // Close on outside click
   document.addEventListener('click', (e) => {
-    if (panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target)) {
-      panel.classList.remove('open');
-      fab.classList.remove('active');
+    if (panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target) && e.target !== scrim) {
+      closePanel();
     }
   });
 }
