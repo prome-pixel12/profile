@@ -763,14 +763,17 @@ async function fetchWeatherData() {
       verdictClass = 'clear';
     }
 
+    // Short labels for corridor mini-map
+    const shortNames = { 'Cyberjaya': 'CYB', 'Putrajaya': 'PJY', 'Puchong': 'PCH', 'Kuchai Lama': 'KCH', 'Jln Klang Lama': 'JKL' };
+
     // Build corridor mini-map (all 5 waypoints in a row)
     const corridorHTML = wpData.map(wp => `
       <div class="weather-wp ${wp.name === worstCurrent.name && worstCurrent.code >= 50 ? 'weather-wp-worst' : ''}">
         <div class="weather-wp-icon">${getWeatherEmoji(wp.code)}</div>
         <div class="weather-wp-temp">${wp.temp}°</div>
-        <div class="weather-wp-name">${wp.name}</div>
+        <div class="weather-wp-name">${shortNames[wp.name] || wp.name}</div>
       </div>
-    `).join('<div class="weather-wp-arrow">→</div>');
+    `).join('<div class="weather-wp-arrow">›</div>');
 
     body.innerHTML = `
       <div class="weather-corridor">

@@ -1969,13 +1969,14 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  overflow-x: auto;
+  gap: 0;
+  overflow: hidden;
 }
 .weather-wp {
   text-align: center;
-  min-width: 48px;
-  padding: 4px 3px;
+  flex: 1;
+  min-width: 0;
+  padding: 4px 2px;
   border-radius: 6px;
   transition: background 0.3s;
 }
@@ -1984,26 +1985,29 @@ img {
   border: 1px solid rgba(255, 107, 107, 0.3);
 }
 .weather-wp-icon {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   line-height: 1;
 }
 .weather-wp-temp {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  margin: 2px 0;
+  margin: 1px 0;
 }
 .weather-wp-name {
   font-family: var(--font-mono);
   font-size: 0.45rem;
   color: var(--text-muted);
-  line-height: 1.2;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .weather-wp-arrow {
   color: var(--primary);
-  font-size: 0.7rem;
-  opacity: 0.5;
+  font-size: 0.55rem;
+  opacity: 0.4;
   flex-shrink: 0;
+  padding: 0 1px;
 }
 
 .weather-route {
