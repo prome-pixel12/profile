@@ -632,15 +632,32 @@ async function fetchWeatherData() {
 
   // Cyberjaya: 2.9213, 101.6559 | Jln Klang Lama: 3.0985, 101.6680
   const urls = [
-    'https://api.open-meteo.com/v1/forecast?latitude=2.9213&longitude=101.6559&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=1',
-    'https://api.open-meteo.com/v1/forecast?latitude=3.0985&longitude=101.6680&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=1'
+    'https://api.open-meteo.com/v1/forecast?latitude=2.9213&longitude=101.6559&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=2',
+    'https://api.open-meteo.com/v1/forecast?latitude=3.0985&longitude=101.6680&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=2'
   ];
 
   try {
     const [cyberjaya, klangLama] = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
 
+    // Find the current hour index by matching API timestamps
     const now = new Date();
-    const currentHour = parseInt(now.toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', hour12: false }));
+    const nowMYT = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
+    const currentHourStr = nowMYT.getFullYear() + '-' +
+      String(nowMYT.getMonth() + 1).padStart(2, '0') + '-' +
+      String(nowMYT.getDate()).padStart(2, '0') + 'T' +
+      String(nowMYT.getHours()).padStart(2, '0') + ':00';
+    
+    let currentIdx = cyberjaya.hourly.time.indexOf(currentHourStr);
+    if (currentIdx === -1) {
+      // Fallback: find nearest past hour
+      for (let i = cyberjaya.hourly.time.length - 1; i >= 0; i--) {
+        if (cyberjaya.hourly.time[i] <= currentHourStr) {
+          currentIdx = i;
+          break;
+        }
+      }
+    }
+    if (currentIdx === -1) currentIdx = 0;
 
     // Current conditions
     const cyb = cyberjaya.current;
@@ -648,9 +665,10 @@ async function fetchWeatherData() {
 
     // Get next 5 hours of forecast (use the worse of the two locations)
     const hourlyRows = [];
+    const totalHours = cyberjaya.hourly.time.length;
     for (let i = 0; i < 5; i++) {
-      const h = currentHour + i;
-      if (h >= 24) break;
+      const h = currentIdx + i;
+      if (h >= totalHours) break;
       const cybProb = cyberjaya.hourly.precipitation_probability[h];
       const klProb = klangLama.hourly.precipitation_probability[h];
       const cybPrecip = cyberjaya.hourly.precipitation[h];
@@ -758,7 +776,10 @@ async function fetchWeatherData() {
         `).join('')}
       </div>
 
-      <div class="weather-updated">Last updated: ${now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', minute: '2-digit', hour12: true })} MYT</div>
+      <div class="weather-updated">
+        API data: ${cyb.time} MYT | Refreshed: ${now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', minute: '2-digit', hour12: true })} MYT
+        <br><button onclick="document.getElementById('weatherBody').innerHTML='<div class=\\'weather-loading\\'>&#9203; Refreshing...</div>';fetchWeatherData();" style="margin-top:6px;background:none;border:1px solid var(--primary);color:var(--primary);padding:4px 12px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:0.65rem;">↻ Refresh</button>
+      </div>
     `;
   } catch (err) {
     body.innerHTML = `<div class="weather-error">⚠️ Failed to fetch weather data.<br>Try again later.<br><small>${err.message}</small></div>`;
