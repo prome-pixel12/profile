@@ -593,7 +593,7 @@ function initWeatherWidget() {
 
   // Close on outside click
   document.addEventListener('click', (e) => {
-    if (panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target) && e.target !== scrim) {
+    if (panel.classList.contains('open') && !panel.contains(e.target) && !fab.contains(e.target) && e.target !== scrim && document.body.contains(e.target)) {
       closePanel();
     }
   });
