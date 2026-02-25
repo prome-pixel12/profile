@@ -1948,6 +1948,64 @@ img {
   max-height: 360px;
 }
 
+/* Corridor mini-map */
+.weather-corridor {
+  margin-bottom: 14px;
+  padding: 10px;
+  background: var(--bg-light);
+  border: 1px solid rgba(108, 92, 231, 0.15);
+  border-radius: 8px;
+}
+.weather-corridor-title {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--primary);
+  margin-bottom: 8px;
+  text-align: center;
+}
+.weather-corridor-map {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  overflow-x: auto;
+}
+.weather-wp {
+  text-align: center;
+  min-width: 48px;
+  padding: 4px 3px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+.weather-wp-worst {
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+.weather-wp-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.weather-wp-temp {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin: 2px 0;
+}
+.weather-wp-name {
+  font-family: var(--font-mono);
+  font-size: 0.45rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.weather-wp-arrow {
+  color: var(--primary);
+  font-size: 0.7rem;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
 .weather-route {
   display: flex;
   justify-content: space-between;

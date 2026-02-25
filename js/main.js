@@ -630,72 +630,102 @@ function getWeatherDesc(code) {
 async function fetchWeatherData() {
   const body = document.getElementById('weatherBody');
 
-  // Cyberjaya: 2.9213, 101.6559 | Jln Klang Lama: 3.0985, 101.6680
-  const urls = [
-    'https://api.open-meteo.com/v1/forecast?latitude=2.9213&longitude=101.6559&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=2',
-    'https://api.open-meteo.com/v1/forecast?latitude=3.0985&longitude=101.6680&current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=2'
+  // 5 waypoints along MEX corridor (~6-7 km apart)
+  const waypoints = [
+    { name: 'Cyberjaya',    lat: 2.9213, lon: 101.6559 },
+    { name: 'Putrajaya',    lat: 2.9500, lon: 101.6600 },
+    { name: 'Puchong',      lat: 3.0000, lon: 101.6550 },
+    { name: 'Kuchai Lama',  lat: 3.0700, lon: 101.6700 },
+    { name: 'Jln Klang Lama', lat: 3.0985, lon: 101.6680 },
   ];
 
-  try {
-    const [cyberjaya, klangLama] = await Promise.all(urls.map(u => fetch(u).then(r => r.json())));
+  const baseUrl = 'https://api.open-meteo.com/v1/forecast';
+  const params = 'current=temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m&hourly=precipitation_probability,precipitation,weather_code&timezone=Asia%2FKuala_Lumpur&forecast_days=2';
 
-    // Find the current hour index by matching API timestamps
+  try {
+    const responses = await Promise.all(
+      waypoints.map(wp =>
+        fetch(`${baseUrl}?latitude=${wp.lat}&longitude=${wp.lon}&${params}`).then(r => r.json())
+      )
+    );
+
     const now = new Date();
     const nowMYT = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kuala_Lumpur' }));
     const currentHourStr = nowMYT.getFullYear() + '-' +
       String(nowMYT.getMonth() + 1).padStart(2, '0') + '-' +
       String(nowMYT.getDate()).padStart(2, '0') + 'T' +
       String(nowMYT.getHours()).padStart(2, '0') + ':00';
-    
-    let currentIdx = cyberjaya.hourly.time.indexOf(currentHourStr);
+
+    // Find current hour index from first response
+    let currentIdx = responses[0].hourly.time.indexOf(currentHourStr);
     if (currentIdx === -1) {
-      // Fallback: find nearest past hour
-      for (let i = cyberjaya.hourly.time.length - 1; i >= 0; i--) {
-        if (cyberjaya.hourly.time[i] <= currentHourStr) {
-          currentIdx = i;
-          break;
-        }
+      for (let i = responses[0].hourly.time.length - 1; i >= 0; i--) {
+        if (responses[0].hourly.time[i] <= currentHourStr) { currentIdx = i; break; }
       }
     }
     if (currentIdx === -1) currentIdx = 0;
 
-    // Current conditions
-    const cyb = cyberjaya.current;
-    const kl = klangLama.current;
+    // Build per-waypoint current conditions
+    const wpData = waypoints.map((wp, idx) => ({
+      name: wp.name,
+      temp: Math.round(responses[idx].current.temperature_2m),
+      code: responses[idx].current.weather_code,
+      precip: responses[idx].current.precipitation,
+      humidity: responses[idx].current.relative_humidity_2m,
+      wind: responses[idx].current.wind_speed_10m,
+    }));
 
-    // Get next 5 hours of forecast (use the worse of the two locations)
+    // Find worst current section
+    const worstCurrent = wpData.reduce((worst, wp) =>
+      wp.code > worst.code ? wp : worst, wpData[0]);
+
+    // Start & end for display
+    const startWp = wpData[0];
+    const endWp = wpData[wpData.length - 1];
+
+    // Build hourly forecast using worst across all 5 waypoints
     const hourlyRows = [];
-    const totalHours = cyberjaya.hourly.time.length;
+    const totalHours = responses[0].hourly.time.length;
     for (let i = 0; i < 5; i++) {
       const h = currentIdx + i;
       if (h >= totalHours) break;
-      const cybProb = cyberjaya.hourly.precipitation_probability[h];
-      const klProb = klangLama.hourly.precipitation_probability[h];
-      const cybPrecip = cyberjaya.hourly.precipitation[h];
-      const klPrecip = klangLama.hourly.precipitation[h];
-      const worstCode = Math.max(cyberjaya.hourly.weather_code[h], klangLama.hourly.weather_code[h]);
 
-      const timeLabel = new Date(cyberjaya.hourly.time[h]).toLocaleTimeString('en-US', {
+      let maxProb = 0, maxPrecip = 0, worstCode = 0, worstName = '';
+      for (let w = 0; w < responses.length; w++) {
+        const prob = responses[w].hourly.precipitation_probability[h];
+        const prec = responses[w].hourly.precipitation[h];
+        const code = responses[w].hourly.weather_code[h];
+        if (prob > maxProb) maxProb = prob;
+        if (prec > maxPrecip) maxPrecip = prec;
+        if (code > worstCode) { worstCode = code; worstName = waypoints[w].name; }
+      }
+
+      const timeLabel = new Date(responses[0].hourly.time[h]).toLocaleTimeString('en-US', {
         timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', hour12: true
       });
 
       hourlyRows.push({
         time: timeLabel,
         icon: getWeatherEmoji(worstCode),
-        prob: Math.max(cybProb, klProb),
-        precip: Math.max(cybPrecip, klPrecip).toFixed(1)
+        prob: maxProb,
+        precip: maxPrecip.toFixed(1),
+        worstAt: worstName
       });
     }
 
-    // Determine advisory verdict
-    const maxProb = Math.max(...hourlyRows.map(r => r.prob));
-    const maxPrecip = Math.max(...hourlyRows.map(r => parseFloat(r.precip)));
-    const isRainy = maxProb >= 50 || maxPrecip >= 1.0;
-    const isStormy = cyb.weather_code >= 80 || kl.weather_code >= 80;
+    // Corridor-wide advisory
+    const corridorMaxProb = Math.max(...hourlyRows.map(r => r.prob));
+    const corridorMaxPrecip = Math.max(...hourlyRows.map(r => parseFloat(r.precip)));
+    const anyStormy = wpData.some(wp => wp.code >= 80);
+    const isRainy = corridorMaxProb >= 50 || corridorMaxPrecip >= 1.0;
 
-    // Rider tips based on conditions
+    // Find worst section across the next few hours
+    const worstHourly = hourlyRows.reduce((worst, r) =>
+      r.prob > worst.prob ? r : worst, hourlyRows[0]);
+
+    // Rider tips
     let tips = [];
-    if (isStormy) {
+    if (anyStormy) {
       tips = [
         { icon: '🧥', text: 'Full raincoat & waterproof gear mandatory' },
         { icon: '⚠️', text: 'Thunderstorm active — consider delaying travel' },
@@ -722,40 +752,54 @@ async function fetchWeatherData() {
     }
 
     let verdictText, verdictClass;
-    if (isStormy) {
-      verdictText = '⛈️ RAINCOAT ON — Thunderstorm active!';
+    if (anyStormy) {
+      verdictText = `⛈️ RAINCOAT ON — Storm near ${worstCurrent.name}!`;
       verdictClass = 'rain';
     } else if (isRainy) {
-      verdictText = '🌧️ RAINCOAT RECOMMENDED — Rain expected';
+      verdictText = `🌧️ RAINCOAT RECOMMENDED — Rain near ${worstHourly.worstAt}`;
       verdictClass = 'rain';
     } else {
-      verdictText = '☀️ NO RAINCOAT NEEDED — Clear conditions';
+      verdictText = '☀️ NO RAINCOAT NEEDED — Clear corridor';
       verdictClass = 'clear';
     }
 
+    // Build corridor mini-map (all 5 waypoints in a row)
+    const corridorHTML = wpData.map(wp => `
+      <div class="weather-wp ${wp.name === worstCurrent.name && worstCurrent.code >= 50 ? 'weather-wp-worst' : ''}">
+        <div class="weather-wp-icon">${getWeatherEmoji(wp.code)}</div>
+        <div class="weather-wp-temp">${wp.temp}°</div>
+        <div class="weather-wp-name">${wp.name}</div>
+      </div>
+    `).join('<div class="weather-wp-arrow">→</div>');
+
     body.innerHTML = `
+      <div class="weather-corridor">
+        <div class="weather-corridor-title">Route Corridor — 5 checkpoints</div>
+        <div class="weather-corridor-map">${corridorHTML}</div>
+      </div>
+
       <div class="weather-route">
         <div class="weather-location">
-          <div class="weather-location-label">Cyberjaya</div>
-          <div class="weather-location-icon">${getWeatherEmoji(cyb.weather_code)}</div>
-          <div class="weather-location-temp">${Math.round(cyb.temperature_2m)}°</div>
-          <div class="weather-location-desc">${getWeatherDesc(cyb.weather_code)}</div>
+          <div class="weather-location-label">${startWp.name}</div>
+          <div class="weather-location-icon">${getWeatherEmoji(startWp.code)}</div>
+          <div class="weather-location-temp">${startWp.temp}°</div>
+          <div class="weather-location-desc">${getWeatherDesc(startWp.code)}</div>
         </div>
         <div class="weather-location">
-          <div class="weather-location-label">Jln Klang Lama</div>
-          <div class="weather-location-icon">${getWeatherEmoji(kl.weather_code)}</div>
-          <div class="weather-location-temp">${Math.round(kl.temperature_2m)}°</div>
-          <div class="weather-location-desc">${getWeatherDesc(kl.weather_code)}</div>
+          <div class="weather-location-label">${endWp.name}</div>
+          <div class="weather-location-icon">${getWeatherEmoji(endWp.code)}</div>
+          <div class="weather-location-temp">${endWp.temp}°</div>
+          <div class="weather-location-desc">${getWeatherDesc(endWp.code)}</div>
         </div>
       </div>
 
       <div class="weather-advisory">
-        <div class="weather-advisory-title">🏍️ Rider Advisory — via MEX</div>
+        <div class="weather-advisory-title">🏍️ Rider Advisory — via MEX (5-point scan)</div>
         <div class="weather-advisory-verdict ${verdictClass}">${verdictText}</div>
       </div>
 
       <div class="weather-hourly">
-        <div class="weather-hourly-title">Next ${hourlyRows.length} Hours</div>
+        <div class="weather-hourly-title">Next ${hourlyRows.length} Hours (worst across corridor)</div>
         ${hourlyRows.map(r => `
           <div class="weather-hourly-row">
             <span class="time">${r.time}</span>
@@ -777,7 +821,7 @@ async function fetchWeatherData() {
       </div>
 
       <div class="weather-updated">
-        API data: ${cyb.time} MYT | Refreshed: ${now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', minute: '2-digit', hour12: true })} MYT
+        5-point corridor scan · ${now.toLocaleTimeString('en-US', { timeZone: 'Asia/Kuala_Lumpur', hour: 'numeric', minute: '2-digit', hour12: true })} MYT
         <br><button onclick="document.getElementById('weatherBody').innerHTML='<div class=\\'weather-loading\\'>&#9203; Refreshing...</div>';fetchWeatherData();" style="margin-top:6px;background:none;border:1px solid var(--primary);color:var(--primary);padding:4px 12px;border-radius:6px;cursor:pointer;font-family:var(--font-mono);font-size:0.65rem;">↻ Refresh</button>
       </div>
     `;
